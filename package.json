@@ -1,0 +1,19 @@
+{
+	"name": "palavra-chave",
+	"version": "1.0.0",
+	"description": "",
+	"main": "app.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/GustavoMaritan/palavra-chave.git"
+	},
+	"author": "Gustavo Maritan <gustavomaritan@gmail.com>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/GustavoMaritan/palavra-chave/issues"
+	},
+	"homepage": "https://github.com/GustavoMaritan/palavra-chave#readme"
+}
