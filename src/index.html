@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+
+	<link rel="stylesheet" href="./content/plugins/photon/css/photon.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.6/mediaelementplayer.css">
+	<link rel="stylesheet" href="./content/css/index.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+	<script>window.$ = window.Jquery = require('jquery');</script>
+
+	<style>
+		.input-container-x {
+			flex-direction: row;
+		}
+
+		.input-container-x>.container-chk {
+			display: flex;
+			margin-right: 12px;
+		}
+
+		.title-mini>div>button {
+			background-color: transparent;
+			border: 0;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.title-mini>.title-mini-menu {
+			width: 24px;
+		}
+
+		.title-mini>.move-windown {
+			width: 100%;
+			height: 18px;
+		}
+
+		.title-mini>.btn-container.btn-header {
+			flex-wrap: nowrap;
+			display: flex;
+			height: 20px;
+		}
+
+		.pane-content {
+			display: flex;
+			width: 100%;
+			padding-top: 33px;
+		}
+
+		.pane-content span{
+			color: white;
+		}
+
+		.resultados{
+			padding: 5px;
+			background: #3a3a3a;
+			overflow-x: hidden;
+			width: 100%;
+			color: white;
+		}
+
+		.pane-content-footer{
+			border: 1px solid black;
+			padding: 5px;
+			background: gray;
+			overflow: hidden;
+			bottom: 0;
+			width: 100%;
+			height: 30px;
+		}
+
+		.pane-content-body{
+			height: 100%;
+    		display: flex;
+		}
+
+		.pane-content-body>.opcoes{
+			width: 40%;
+    		padding: 10px;
+		}
+
+		.flex-direction-col{
+			flex-direction: column;
+			position: relative;
+		}
+
+		.input-container-button{
+    		display: flex;
+		}
+		.input-container-button>input{
+    		width: 100%;
+		}
+		.input-container-button>i{
+    		color: white;
+		}
+
+		.input-container>ul{
+			color: white;
+		}
+
+		.extensoes{
+		padding: 5px
+		}
+
+		.extensoes>div{
+			display: flex;
+			color: white;
+			height: 20px;
+		}
+		.extensoes>div>label{
+			margin-left: 5px;
+		}
+
+		.input-container.button{
+			flex-direction: row-reverse;
+		}
+
+		.resultados>table{
+		    width: 100%;
+			text-align: left;
+		}
+		.resultados>table input{
+		    color: black;
+		}
+		.resultados>table>tbody td{
+			font-size: 14px;
+			padding: 3px;
+		}
+
+		.resultados>table>tbody td i{
+			font-size: 14px;
+			padding: 3px;
+		}
+
+		.resultados>table>tbody tr:nth-child(odd){
+			background: #444444;
+		}
+
+		.resultados>table>tbody tr:hover{
+			background: #585858;
+		}
+
+		.div-table{
+			white-space: nowrap; 
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+	</style>
+
+	<script>
+		const remote = require('electron').remote,
+			app = require('./server/app'),
+			dialog = remote.dialog,
+			window1 = remote.getCurrentWindow();
+	</script>
+</head>
+
+<body>
+	<div class="window">
+		<div class="window-content">
+			<div class="pane-group">
+				<div class="title-mini">
+					<div class="title-mini-menu">
+						<button onclick="opcoes()">
+							<span class="icon icon-list"></span>
+						</button>
+					</div>
+					<div class="move-windown"></div>
+					<div class="btn-container btn-header" style="text-align: right;">
+						<button onclick="minimizeWindow()">
+							<span class="icon icon-down-open"></span>
+						</button>
+						<button onclick="maximizeWindow()">
+							<span class="icon icon-popup"></span>
+						</button>
+						<button onclick="closeWindow()">
+							<span class="icon icon-cancel"></span>
+						</button>
+					</div>
+				</div>
+				<div class="pane-content flex-direction-col">
+					<div class="pane-content-body">
+						<div class="opcoes">
+							<div class="input-container">
+								<span>Caminho</span>
+								<div class="input-container-button">
+									<input type="text" id="txt-caminho" readonly>
+									<i class="material-icons" onclick="openDialog()">search</i>
+								</div>
+							</div>
+							<div class="input-container">
+								<span>Palavra Chave</span>
+								<input type="text" id="txt-palavra">
+							</div>
+							<div class="input-container">
+								<span>Extensões</span>
+								<div class="extensoes">
+									<div>
+										<input data-chk-all type="checkbox" name="txt-all" id="txt-all" checked>
+										<label for="txt-all">Todas</label>
+									</div>
+								</div>
+							</div>
+							<div class="input-container button">
+								<button onclick="filtrar()">Buscar</button>
+							</div>
+						</div>
+						<div class="resultados">
+							<table>
+								<thead>
+									<tr>
+										<th style="display: flex; justify-content: space-between" onclick="ordenar('p')">
+											<div>Arquivos</div>
+											<div style="margin-right: 5px">
+												<input type="text" placeholder="Filtrar" id="txt-filtro">
+											</div>
+										</th>
+										<th style="width: 10%" onclick="ordenar('o')">Ocorrencias</th>
+										<th style="width: 5%"></th>
+										<th style="width: 5%"></th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="pane-content-footer">
+						<span id="span-pesquisando"></span>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+</body>
+
+<script>
+
+	$('#txt-filtro').keyup(function () {
+		$('[data-arquivo]').hide();
+
+		if (!$(this).val()) {
+			$('[data-arquivo]').show();
+			return;
+		}
+
+		if (!$('[data-arquivo*=' + $(this).val() + ']').length) {
+			return;
+		}
+
+		$('[data-arquivo*=' + $(this).val() + ']').show();
+	});
+
+	function ordenar(tipo) {
+		app.ordenar(tipo);
+	}
+
+	function opcoes() {
+		$('.opcoes').toggle();
+	}
+
+	$(document).on('click', 'input[data-chk-all]', function () {
+		$('[data-chk-item]').prop('checked', $(this).prop('checked'));
+	});
+	$(document).on('click', 'input[data-chk-item]', function () {
+		$('input[data-chk-all]').prop('checked',
+			$('input[data-chk-item]:checked').length == $('input[data-chk-item]').length
+		);
+	});
+
+	$(document).ready(() => {
+		app.extensoes();
+
+	})
+	function openFile(_path) {
+		app.openFile(_path);
+	}
+
+	function openDiretorio(_path) {
+		app.openDiretorio(_path);
+	}
+
+	function filtrar() {
+		let cam = $('#txt-caminho').val();
+		let pal = $('#txt-palavra').val();
+		console.log('pal', pal)
+		app.pesquisar(cam || 'C:\\Gustavo\\Projetos', pal);
+	}
+
+	function openDialog(params) {
+
+		var path = dialog.showOpenDialog({
+			properties: ['openDirectory']
+		});
+
+		$('#txt-caminho').val(path[0]);
+		$('#txt-caminho').attr('title', path[0]);
+	}
+
+	function closeWindow() {
+		const window = remote.getCurrentWindow();
+		window.close();
+	}
+
+	function minimizeWindow() {
+		const window = remote.getCurrentWindow();
+		window.minimize();
+	}
+
+	function maximizeWindow() {
+		const window = remote.getCurrentWindow();
+		if (window.isMaximized())
+			window.restore();
+		else
+			window.maximize();
+	}
+</script>
+
+</html>
