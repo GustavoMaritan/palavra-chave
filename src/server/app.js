@@ -5,7 +5,7 @@ const path = require('path');
 const { shell } = require('electron');
 const exts = ['txt', 'bat', 'js', 'css', 'html', 'sql'];
 const excludesFolders = ['.git', 'node_modules'];
-let regexs, encontrados, pesquisados, arquivos;
+let regexs, encontrados, pesquisados, arquivos, extsFilter, fileRegex;
 
 module.exports = {
     pesquisar,
@@ -19,7 +19,7 @@ function extensoes() {
     exts.map(x => {
         JQ('.extensoes').append(`
             <div>
-                <input data-chk-item type="checkbox" name="ext-${x}" id="ext-${x}" checked>
+                <input data-chk-item type="checkbox" value="${x}" name="ext-${x}" id="ext-${x}" checked>
                 <label for="ext-${x}">${x}</label>
             </div>
         `);
@@ -28,7 +28,6 @@ function extensoes() {
 
 function openFile(_path) {
     let a = shell.openItem(_path);
-    console.log(a)
 }
 
 function openDiretorio(_path) {
@@ -38,7 +37,9 @@ function openDiretorio(_path) {
     shell.openItem(_path.join('\\'));
 }
 
-async function pesquisar(_path, palavraChave) {
+async function pesquisar(_path, palavraChave, _exts, _file1) {
+    extsFilter = _exts || [];
+    fileRegex = _file1 ? new RegExp(_file1, 'gi') : null;
     regexs = [];
     encontrados = [];
     pesquisados = 0;
@@ -60,7 +61,7 @@ async function pesquisar(_path, palavraChave) {
 async function filtrar($path) {
     return new Promise((res, rej) => {
         fs.readdir($path, async (err, files) => {
-            pesquisados += files.length;
+            //pesquisados += files.length;
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
 
@@ -76,12 +77,17 @@ async function filtrar($path) {
                     continue;
                 }
 
+                if (fileRegex && !fileRegex.test(_path)) continue;
+                console.log('_path', _path)
+
                 let _file = file.split('.');
                 //Arquivos sem extensao
                 if (_file.length != 2) continue;
 
                 //Verifica Extensoes
-                if (!exts.includes(_file[1])) continue;
+                if (extsFilter.length && !extsFilter.includes(_file[1])) continue;
+
+                pesquisados += 1;
 
                 let arquivo = fs.readFileSync(_path, 'utf8');
 
@@ -95,7 +101,7 @@ async function filtrar($path) {
                             }
                         };
                         JQ('.resultados>table>tbody').append(`
-                            <tr data-arquivo="${obj.path}" data-ocorrencias="${obj.ocorrencias}">
+                            <tr title="${obj.path}" data-arquivo="${obj.path}" data-ocorrencias="${obj.ocorrencias}">
                                 <td style="max-width: 200px"><div class="div-table">${obj.path}</div></td>
                                 <td style="text-align: center">${obj.ocorrencias}</td>
                                 <td title="Abrir" onclick="openFile('${obj._path}')"><i class="material-icons">done</i></td>
@@ -134,7 +140,7 @@ function createTable(tipo) {
     JQ('.resultados>table>tbody').attr('data-tipo', tipo);
     arquivos.forEach(obj => {
         JQ('.resultados>table>tbody').append(`
-            <tr data-arquivo="${obj.path}" data-ocorrencias="${obj.ocorrencias}">
+            <tr title="${obj.path}" data-arquivo="${obj.path}" data-ocorrencias="${obj.ocorrencias}">
                 <td style="max-width: 200px"><div class="div-table">${obj.path}</div></td>
                 <td style="text-align: center">${obj.ocorrencias}</td>
                 <td title="Abrir" onclick="openFile('${obj._path}')"><i class="material-icons">done</i></td>

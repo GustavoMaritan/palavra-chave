@@ -195,16 +195,21 @@
 							</div>
 							<div class="input-container">
 								<span>Palavra Chave</span>
-								<input type="text" id="txt-palavra">
+								<input type="text" id="txt-palavra" placeholder="Palavra ou regex">
+							</div>
+							<div class="input-container">
+								<span>Arquivo</span>
+								<input type="text" id="txt-file" placeholder="Regex para arquivos buscados">
 							</div>
 							<div class="input-container">
 								<span>Extensões</span>
-								<div class="extensoes">
+								<input type="text" id="txt-extencao" placeholder="ts;json; ...">
+								<!-- <div class="extensoes">
 									<div>
 										<input data-chk-all type="checkbox" name="txt-all" id="txt-all" checked>
 										<label for="txt-all">Todas</label>
 									</div>
-								</div>
+								</div> -->
 							</div>
 							<div class="input-container button">
 								<button onclick="filtrar()">Buscar</button>
@@ -275,10 +280,10 @@
 		);
 	});
 
-	$(document).ready(() => {
-		app.extensoes();
+	// $(document).ready(() => {
+	// 	app.extensoes();
+	// })
 
-	})
 	function openFile(_path) {
 		app.openFile(_path);
 	}
@@ -290,8 +295,19 @@
 	function filtrar() {
 		let cam = $('#txt-caminho').val();
 		let pal = $('#txt-palavra').val();
-		console.log('pal', pal)
-		app.pesquisar(cam || 'C:\\Gustavo\\Projetos', pal);
+		let file = $('#txt-file').val();
+		let ext = $('#txt-extencao').val().split(';');
+
+		// $('input[data-chk-item]:checked').each(function () {
+		// 	ext.push($(this).val());
+		// });
+
+		app.pesquisar(
+			cam || 'C:\\Gustavo\\Projetos',
+			pal,
+			ext.filter(x => x),
+			file
+		);
 	}
 
 	function openDialog(params) {
